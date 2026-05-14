@@ -1,5 +1,6 @@
 package edu.upb.eventop.repository.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.UuidGenerator;
@@ -21,6 +22,7 @@ public class Eventos {
     private String descripcion;
 
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", referencedColumnName = "id")
     private Empresa empresa;
