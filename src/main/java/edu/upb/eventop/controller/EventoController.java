@@ -1,5 +1,6 @@
 package edu.upb.eventop.controller;
 
+import edu.upb.eventop.repository.dto.response.EventoResponseDto;
 import edu.upb.eventop.repository.entity.Eventos;
 import edu.upb.eventop.service.EventosService;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class EventoController {
     private final EventosService eventosService;
 
     @GetMapping()
-    public ResponseEntity<List<Eventos>> eventos() {
+    public ResponseEntity<List<EventoResponseDto>> eventos() {
         try {
             return ResponseEntity.ok(eventosService.eventos());
         }catch (Exception e) {

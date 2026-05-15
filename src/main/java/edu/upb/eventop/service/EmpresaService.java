@@ -1,6 +1,7 @@
 package edu.upb.eventop.service;
 
 import edu.upb.eventop.repository.EmpresaRepository;
+import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class EmpresaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Empresa> listar() {
-        return this.repository.findAll();
+    public List<EmpresaDto> listar() {
+        return this.repository.findByNombreAux("Empresa 1");
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,6 @@
 package edu.upb.eventop.controller;
 
+import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import edu.upb.eventop.repository.entity.Eventos;
 import edu.upb.eventop.service.EmpresaService;
@@ -23,7 +24,7 @@ public class EmpresaController {
 
 
     @GetMapping()
-    public ResponseEntity<List<Empresa>> empresas() {
+    public ResponseEntity<List<EmpresaDto>> empresas() {
         try {
             return ResponseEntity.ok(empresaService.listar());
         }catch (Exception e) {

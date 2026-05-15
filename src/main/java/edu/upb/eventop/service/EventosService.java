@@ -1,6 +1,7 @@
 package edu.upb.eventop.service;
 
 import edu.upb.eventop.repository.EventosRepository;
+import edu.upb.eventop.repository.dto.response.EventoResponseDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import edu.upb.eventop.repository.entity.Eventos;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,8 @@ public class EventosService {
     private final EmpresaService empresaService;
 
     @Transactional(readOnly = true)
-    public List<Eventos> eventos() {
-        return eventosRepository.findAll();
+    public List<EventoResponseDto> eventos() {
+        return eventosRepository.listarEventos();
     }
 
     @Transactional
