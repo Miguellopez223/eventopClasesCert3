@@ -12,20 +12,20 @@ import java.util.List;
 
 @Repository
 public interface EmpresaRepository extends JpaRepository<Empresa, String> {
-    @Query("SELECT e FROM Empresa  e WHERE e.nombre='Empresa 1' ")
+    @Query("SELECT e FROM Empresa  e WHERE e.nombreEmpresa='Empresa 1' ")
     List<Empresa> listarEmpresas();
 
-    List<Empresa> findByNombre(String nombre);
+    List<Empresa> findByNombreEmpresa(String nombre);
 
-    @Query("SELECT e FROM Empresa e WHERE e.nombre=:pNombre")
+    @Query("SELECT e FROM Empresa e WHERE e.nombreEmpresa=:pNombre")
     List<EmpresaDto> findByNombreAux(@Param("pNombre") String nombre);
 
-    @Query("SELECT new edu.upb.eventop.repository.dto.response.EmpresaDto(e.id, e.nombre)  " +
-            "FROM Empresa e WHERE e.nombre=:pNombre")
+    @Query("SELECT new edu.upb.eventop.repository.dto.response.EmpresaDto(e.id, e.nombreEmpresa)  " +
+            "FROM Empresa e WHERE e.nombreEmpresa=:pNombre")
     List<EmpresaDto> findByNombreAuxB(@Param("pNombre") String nombre);
 
-    @Query("SELECT new edu.upb.eventop.repository.dto.response.EmpresaDto(e.nombre)  " +
-            "FROM Empresa e WHERE e.nombre=:pNombre")
+    @Query("SELECT new edu.upb.eventop.repository.dto.response.EmpresaDto(e.nombreEmpresa)  " +
+            "FROM Empresa e WHERE e.nombreEmpresa=:pNombre")
     List<EmpresaDto> findByNombreAuxC(@Param("pNombre") String nombre);
 
 }

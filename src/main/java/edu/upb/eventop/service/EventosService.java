@@ -19,7 +19,7 @@ public class EventosService {
 
     @Transactional(readOnly = true)
     public List<EventoResponseDto> eventos() {
-        return eventosRepository.listarEventos();
+        return eventosRepository.listarEventos3();
     }
 
     @Transactional

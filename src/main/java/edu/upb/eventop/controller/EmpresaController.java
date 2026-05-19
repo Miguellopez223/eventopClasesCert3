@@ -1,5 +1,6 @@
 package edu.upb.eventop.controller;
 
+import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import edu.upb.eventop.repository.entity.Eventos;
@@ -34,7 +35,7 @@ public class EmpresaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> guardar(@RequestBody Empresa empresa) {
+    public ResponseEntity<Void> guardar(@RequestBody EmpresaRequestDto empresa) {
         this.empresaService.save(empresa);
         return ResponseEntity.ok().build();
     }

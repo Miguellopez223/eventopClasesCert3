@@ -16,7 +16,7 @@ public class Empresa {
 
     @Column(name = "nombre", length = 50, nullable = false,
             comment = "Esta columna almacena el nombre del evento")
-    private String nombre;
+    private String nombreEmpresa;
 
     @Column(name = "descrpcion", length = 250,
             comment = "Esta columna almacena la descripcion del evento")
@@ -31,11 +31,11 @@ public class Empresa {
     }
 
     public String getNombre() {
-        return nombre;
+        return nombreEmpresa;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombreEmpresa = nombre;
     }
 
     public String getDescripcion() {

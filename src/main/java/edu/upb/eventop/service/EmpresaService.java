@@ -1,6 +1,7 @@
 package edu.upb.eventop.service;
 
 import edu.upb.eventop.repository.EmpresaRepository;
+import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,11 @@ public class EmpresaService {
     private final EmpresaRepository repository;
 
     @Transactional
-    public void save(Empresa empresa) {
-        this.repository.save(empresa);
+    public void save(EmpresaRequestDto empresa) {
+        Empresa empresa1 = new Empresa();
+        empresa1.setNombre(empresa.getNombre());
+        empresa1.setDescripcion(empresa.getDescripcion());
+        this.repository.save(empresa1);
     }
 
     @Transactional(readOnly = true)

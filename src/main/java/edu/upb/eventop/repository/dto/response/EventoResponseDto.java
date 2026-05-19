@@ -21,6 +21,12 @@ public class EventoResponseDto {
         this.empresa = empresa;
     }
 
+    public EventoResponseDto(String id, String nombre, String descripcion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
     public EventoResponseDto(Eventos eventos) {
         this.id = eventos.getId();
         this.nombre = eventos.getNombre();
