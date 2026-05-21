@@ -4,6 +4,8 @@ import edu.upb.eventop.repository.dto.response.EventoResponseDto;
 import edu.upb.eventop.repository.entity.Eventos;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,4 +25,10 @@ public interface EventosRepository extends JpaRepository<Eventos, String> {
             "WHERE ee.nombre='Empresa 1' ", nativeQuery = true)
     List<EventoResponseDto> listarEventos3();
 
+
+    @Procedure(procedureName = "SP_CREAR_EMPRESA")
+    String crearEmpresa(
+            @Param("p_nombre") String nombre,
+            @Param("p_descripcion") String descripcion
+    );
 }
