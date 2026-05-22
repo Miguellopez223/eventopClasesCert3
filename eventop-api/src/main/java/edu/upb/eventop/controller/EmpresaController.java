@@ -7,10 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +33,18 @@ public class EmpresaController {
     public ResponseEntity<Void> guardar(@RequestBody EmpresaRequestDto empresa) {
         try {
             this.empresaService.save(empresa);
+            return ResponseEntity.ok().build();
+        }catch (Exception e) {
+            log.error("Error al guardar empresa", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> actualizar(@PathVariable("id")String empresaId,
+                                        @RequestBody EmpresaRequestDto empresa) {
+        try {
+            this.empresaService.update(empresaId, empresa);
             return ResponseEntity.ok().build();
         }catch (Exception e) {
             log.error("Error al guardar empresa", e);

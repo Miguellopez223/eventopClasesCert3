@@ -21,12 +21,12 @@ public class EmpresaService {
 
     @Transactional
     public void save(EmpresaRequestDto empresa) throws Exception {
-        if(StringUtil.isNullOrEmpty(empresa.getNombre())) {
+        if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
             log.error("Error al guardar empresa. El campo nombre null");
             throw new Exception("El campo nombre es null");
         }
 
-        if(StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
+        if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
             log.error("Error al guardar empresa. El campo Descripcion null");
             throw new Exception("El campo Descripcion es null");
         }
@@ -35,6 +35,35 @@ public class EmpresaService {
         empresa1.setNombre(empresa.getNombre());
         empresa1.setDescripcion(empresa.getDescripcion());
         this.repository.save(empresa1);
+    }
+
+
+    @Transactional
+    public void update(String empresaId, EmpresaRequestDto empresa) throws Exception {
+        if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
+            log.error("Error al guardar empresa. El campo nombre null");
+            throw new Exception("El campo nombre es null");
+        }
+
+        if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
+            log.error("Error al guardar empresa. El campo Descripcion null");
+            throw new Exception("El campo Descripcion es null");
+        }
+
+        this.repository.actualizarEmpresa(empresaId, empresa.getNombre(), empresa.getDescripcion());
+
+        /*
+         Optional<Empresa> optionalEmpresa = this.repository.findById(empresaId);
+         if(optionalEmpresa.isEmpty()) {
+         throw new Exception("No existe el empresa con el id: " + empresaId);
+         }
+
+         Empresa empresa1 = optionalEmpresa.get();
+         empresa1.setNombre(empresa.getNombre());
+         empresa1.setDescripcion(empresa.getDescripcion());
+         //this.repository.save(empresa1);
+
+         */
     }
 
     @Transactional(readOnly = true)

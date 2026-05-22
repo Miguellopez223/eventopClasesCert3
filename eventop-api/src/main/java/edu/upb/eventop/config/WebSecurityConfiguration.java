@@ -18,10 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Configuration
@@ -44,7 +42,9 @@ public class WebSecurityConfiguration implements WebMvcConfigurer, Serializable 
                                                 "/swagger-ui.html").permitAll()
 
                                         .requestMatchers(HttpMethod.POST, "/api/v1/empresas").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/v1/empresas").permitAll()
+                                        .requestMatchers(HttpMethod.PUT, "/api/v1/empresas/**").permitAll()
 
                                         .requestMatchers("/error").anonymous() // <----- Fix
                                         .anyRequest().authenticated()

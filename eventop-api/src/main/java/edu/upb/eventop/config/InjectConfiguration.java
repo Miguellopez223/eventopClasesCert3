@@ -1,5 +1,6 @@
 package edu.upb.eventop.config;
 
+import edu.upb.eventop.repository.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,13 +32,12 @@ public class InjectConfiguration {
                 return Optional.of("ADMIN");
             }
 
-            //User user = (User) authentication.getPrincipal();
-            //try {
-             //   return Optional.ofNullable(user.getId());
-            //} catch (Exception e) {
-             //   return Optional.of("ADMIN");
-            //}
-            return Optional.of("ADMIN");
+            User user = (User) authentication.getPrincipal();
+            try {
+                return Optional.of(user.getUsername());
+            } catch (Exception e) {
+                return Optional.of("ADMIN");
+            }
         };
     }
 
