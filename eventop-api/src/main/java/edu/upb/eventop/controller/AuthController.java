@@ -38,8 +38,7 @@ public class AuthController {
     public ResponseEntity<?> token(
             @RequestBody AuthenticationDto data) {
         try {
-            OKAuthDto token = auth(data);
-            return ok(token);
+            return ok(auth(data));
         } catch (BadCredentialsException e) {
             log.error("Error BadCredentialsException al autenticar", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Error al autenticar");

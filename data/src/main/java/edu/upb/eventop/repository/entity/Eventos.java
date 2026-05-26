@@ -24,7 +24,7 @@ public class Eventos extends AuditableEntity {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", referencedColumnName = "id")
-    private Empresa empresa;
+    private Empresa materia;
 
 
     public String getId() {
@@ -52,10 +52,10 @@ public class Eventos extends AuditableEntity {
     }
 
     public Empresa getEmpresa() {
-        return empresa;
+        return materia;
     }
 
     public void setEmpresa(Empresa empresa) {
-        this.empresa = empresa;
+        this.materia = empresa;
     }
 }

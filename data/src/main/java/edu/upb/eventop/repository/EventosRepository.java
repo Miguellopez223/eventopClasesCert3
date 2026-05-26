@@ -12,11 +12,11 @@ import java.util.List;
 
 @Repository
 public interface EventosRepository extends JpaRepository<Eventos, String> {
-    @Query("SELECT e FROM Eventos e INNER JOIN FETCH e.empresa ee " +
+    @Query("SELECT e FROM Eventos e INNER JOIN FETCH e.materia ee " +
             "WHERE ee.nombreEmpresa='Empresa 1' ")
     List<EventoResponseDto> listarEventos();
 
-    @Query("SELECT e FROM Eventos e INNER JOIN  Empresa ee ON (e.empresa = ee) " +
+    @Query("SELECT e FROM Eventos e INNER JOIN  Empresa ee ON (e.materia = ee) " +
             "WHERE ee.nombreEmpresa='Empresa 1' ")
     List<EventoResponseDto> listarEventos2();
 
