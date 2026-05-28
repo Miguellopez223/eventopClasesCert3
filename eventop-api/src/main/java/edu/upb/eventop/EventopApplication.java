@@ -1,5 +1,9 @@
 package edu.upb.eventop;
 
+import edu.upb.eventop.integracion.Sistema1AuthRequest;
+import edu.upb.eventop.integracion.Sistema1AuthResponse;
+import edu.upb.eventop.integracion.SistemaA;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +14,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableJpaAuditing
 @SpringBootApplication
 public class EventopApplication implements CommandLineRunner {
+	@Autowired
+	private SistemaA sistemaA;
 
 	public static void main(String[] args) {
 		SpringApplication.run(EventopApplication.class, args);
@@ -17,6 +23,11 @@ public class EventopApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		Sistema1AuthRequest request = new Sistema1AuthRequest();
+		request.setUsername("root");
+		request.setPassword("Abc123**");
+		Sistema1AuthResponse response = sistemaA.auth(request);
+		System.out.println(response);
 	}
 
 }
