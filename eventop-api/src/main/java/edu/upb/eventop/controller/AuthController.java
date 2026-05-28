@@ -37,6 +37,7 @@ public class AuthController {
     @PostMapping()
     public ResponseEntity<?> token(
             @RequestBody AuthenticationDto data) {
+
         try {
             return ok(auth(data));
         } catch (BadCredentialsException e) {
@@ -67,7 +68,8 @@ public class AuthController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.username(), data.password()));
             log.info("Autenticado correctamente");
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities()));
+            SecurityContextHolder.getContext()
+                    .setAuthentication(new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities()));
             return jwtTokenProvider.createToken(user);
         } catch (BadCredentialsException e) {
             log.error("BadCredentialsException. Causa:{} ", e.getMessage());

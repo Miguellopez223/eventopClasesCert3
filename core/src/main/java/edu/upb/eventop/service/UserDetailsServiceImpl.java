@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserDetailsServiceImpl implements org.springframework.security.core.userdetails.UserDetailsService {
     private final UserRepository userRepository;
 
-
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
