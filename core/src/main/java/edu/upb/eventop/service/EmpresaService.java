@@ -7,6 +7,8 @@ import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +20,23 @@ import java.util.Optional;
 @Service
 public class EmpresaService {
     private final EmpresaRepository repository;
+    private final LogService logService;
 
     @Transactional
     public void save(EmpresaRequestDto empresa) throws Exception {
+        String usuario = getUsuarioActual();
+        // Log asíncrono: se dispara y el método sigue de inmediato (no impacta el tiempo).
+        this.logService.infoTxAsync("Inicio guardado de empresa: " + empresa.getNombre(), usuario);
+
         if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
             log.error("Error al guardar empresa. El campo nombre null");
+            this.logService.errorTxAsync("Error al guardar empresa. El campo nombre es null", usuario);
             throw new Exception("El campo nombre es null");
         }
 
         if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
             log.error("Error al guardar empresa. El campo Descripcion null");
+            this.logService.errorTxAsync("Error al guardar empresa. El campo Descripcion es null", usuario);
             throw new Exception("El campo Descripcion es null");
         }
 
@@ -35,6 +44,21 @@ public class EmpresaService {
         empresa1.setNombre(empresa.getNombre());
         empresa1.setDescripcion(empresa.getDescripcion());
         this.repository.save(empresa1);
+
+        this.logService.infoTxAsync("Empresa guardada correctamente: " + empresa.getNombre(), usuario);
+    }
+
+    /**
+     * Resuelve el usuario autenticado. El contexto de seguridad vive en el hilo
+     * actual y NO se propaga al hilo async, por eso lo capturamos aquí y lo
+     * pasamos como parámetro a LogService.
+     */
+    private String getUsuarioActual() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "ANONIMO";
+        }
+        return authentication.getName();
     }
 
 
