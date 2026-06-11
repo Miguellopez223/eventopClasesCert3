@@ -41,4 +41,5 @@ public class EventopApplication implements CommandLineRunner {
 		}
 	}
 
+	// COMENTARIO PRUEBA COMENTARIO ESCRITO 11 DE JUNIO 2026
 }
