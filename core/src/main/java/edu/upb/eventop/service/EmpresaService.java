@@ -5,6 +5,7 @@ import edu.upb.eventop.repository.EmpresaRepository;
 import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
+import edu.upb.eventop.service.exception.NotDataFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,23 +19,32 @@ import java.util.Optional;
 @Service
 public class EmpresaService {
     private final EmpresaRepository repository;
+    private final LogService logService;
 
-    @Transactional
+    @Transactional(noRollbackFor = NotDataFoundException.class)
     public void save(EmpresaRequestDto empresa) throws Exception {
+        logService.infoTx("Iniciando el registro de la empresa: "+empresa.getNombre());
         if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
             log.error("Error al guardar empresa. El campo nombre null");
+            logService.errorTx("Error al guardar empresa. El campo nombre null");
             throw new Exception("El campo nombre es null");
         }
 
+        logService.infoTx("Validando empresa: "+empresa.getNombre());
         if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
             log.error("Error al guardar empresa. El campo Descripcion null");
+            logService.errorTx("El campo Descripcion es null");
             throw new Exception("El campo Descripcion es null");
         }
 
+        logService.infoTx("Preparando para registrar:"+ empresa.getNombre());
         Empresa empresa1 = new Empresa();
         empresa1.setNombre(empresa.getNombre());
         empresa1.setDescripcion(empresa.getDescripcion());
         this.repository.save(empresa1);
+        //throw new NotDataFoundException("El empresa no existe");
+
+        //logService.infoTx("Registrado en DB. " + empresa.getNombre());
     }
 
 

@@ -8,10 +8,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @EnableJpaAuditing
+@EnableAsync
+@EnableScheduling
 @SpringBootApplication
 public class EventopApplication implements CommandLineRunner {
 	@Autowired
@@ -26,8 +30,8 @@ public class EventopApplication implements CommandLineRunner {
 		Sistema1AuthRequest request = new Sistema1AuthRequest();
 		request.setUsername("root");
 		request.setPassword("Abc123**");
-		Sistema1AuthResponse response = sistemaA.auth(request);
-		System.out.println(response);
+		//Sistema1AuthResponse response = sistemaA.auth(request);
+
 	}
 
 }
