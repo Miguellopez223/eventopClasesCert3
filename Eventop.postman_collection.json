@@ -1,0 +1,218 @@
+{
+  "info": {
+    "name": "Eventop API",
+    "description": "Coleccion para probar los endpoints de Eventop (auth, empresas, eventos) y observar el logging asincrono.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "empresa_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (root)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) {",
+                  "    pm.collectionVariables.set('access_token', json.access_token);",
+                  "    console.log('Token guardado en {{access_token}}');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"root\",\n    \"password\": \"Abc123**\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth"]
+            },
+            "description": "Login publico. Guarda automaticamente el access_token en la variable de coleccion {{access_token}} para usarlo en las demas peticiones."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empresas",
+      "item": [
+        {
+          "name": "Listar empresas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/empresas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "empresas"]
+            },
+            "description": "Requiere ROLE_ADMIN o ROLE_ROOT. Devuelve las empresas con nombre = 'Empresa 1' (filtro fijo en el repositorio)."
+          }
+        },
+        {
+          "name": "Crear empresa (OK)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Para ver el log asincrono: revisa la consola del backend.",
+                  "// Apareceran lineas con el hilo 'taskLog-X' y, ~30s despues,",
+                  "// el mensaje de log persistido en la tabla 'logs'.",
+                  "// Como EmpresaService.save() lanza una excepcion de prueba al final,",
+                  "// la respuesta sera 500 y la empresa hara rollback (no se inserta),",
+                  "// pero el log SI quedara guardado (transaccion REQUIRES_NEW)."
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre_empresa\": \"Empresa Async\",\n    \"descripcion\": \"Probando el pool de hilos taskLog\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/empresas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "empresas"]
+            },
+            "description": "Crea una empresa. Dispara dos logs asincronos (inicio y fin) via LogService.infoTxAsync. Actualmente lanza una excepcion de prueba al final del metodo para forzar rollback."
+          }
+        },
+        {
+          "name": "Crear empresa (nombre vacio - error validacion)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre_empresa\": \"\",\n    \"descripcion\": \"Empresa sin nombre\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/empresas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "empresas"]
+            },
+            "description": "Provoca el log de ERROR asincrono (LogService.errorTxAsync) por validacion manual en el servicio."
+          }
+        },
+        {
+          "name": "Crear empresa (nombre > 50 caracteres)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre_empresa\": \"Este es un nombre de empresa deliberadamente muy largo para superar 50\",\n    \"descripcion\": \"Probando violacion de longitud de columna\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/empresas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "empresas"]
+            },
+            "description": "El framework no valida la longitud (sin Bean Validation). El error lo arroja la base de datos al hacer commit (columna 'nombre' length=50)."
+          }
+        },
+        {
+          "name": "Actualizar empresa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre_empresa\": \"Empresa 1\",\n    \"descripcion\": \"Descripcion actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/empresas/{{empresa_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "empresas", "{{empresa_id}}"]
+            },
+            "description": "Reemplaza {{empresa_id}} por el id de una empresa existente (ver 'Listar empresas')."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eventos",
+      "item": [
+        {
+          "name": "Listar eventos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/eventos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "eventos"]
+            },
+            "description": "Requiere cualquier JWT valido (no requiere rol especifico)."
+          }
+        },
+        {
+          "name": "Crear evento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Evento de prueba\",\n    \"descripcion\": \"Descripcion del evento de prueba\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/eventos/{{empresa_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "eventos", "{{empresa_id}}"]
+            },
+            "description": "Reemplaza {{empresa_id}} por el id de una empresa existente (la entidad Eventos se relaciona con Empresa via el campo 'materia')."
+          }
+        }
+      ]
+    }
+  ]
+}

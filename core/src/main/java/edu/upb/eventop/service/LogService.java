@@ -32,13 +32,13 @@ public class LogService {
 
     private final LogRepository repository;
 
-    @Async("logExecutor")
+    @Async("taskLog")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void infoTxAsync(String mensaje, String usuario) {
         guardar("INFO", mensaje, usuario);
     }
 
-    @Async("logExecutor")
+    @Async("taskLog")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void errorTxAsync(String mensaje, String usuario) {
         guardar("ERROR", mensaje, usuario);
@@ -46,6 +46,12 @@ public class LogService {
 
     private void guardar(String nivel, String mensaje, String usuario) {
         try {
+            // EXPERIMENTO: simulamos que escribir el log es MUY lento (30s).
+            // Como corre en el hilo "log-*" (no en el de save()), el método save()
+            // termina de inmediato y NO espera estos 30 segundos.
+            log.info("[{}] Iniciando escritura de log (dormirá 30s)...", Thread.currentThread().getName());
+            Thread.sleep(30000);
+
             Log entidad = Log.builder()
                     .nivel(nivel)
                     .mensaje(mensaje)
@@ -53,6 +59,10 @@ public class LogService {
                     .fecha(LocalDateTime.now())
                     .build();
             this.repository.save(entidad);
+            log.info("[{}] Log persistido en base de datos.", Thread.currentThread().getName());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Escritura de log interrumpida: {}", e.getMessage());
         } catch (Exception e) {
             // El logging nunca debe tumbar la operación de negocio.
             log.error("No se pudo registrar el log en base de datos: {}", e.getMessage());

@@ -22,7 +22,10 @@ public class EmpresaService {
     private final EmpresaRepository repository;
     private final LogService logService;
 
-    @Transactional
+    // rollbackFor = Exception.class -> por defecto Spring sólo hace rollback ante
+    // RuntimeException/Error. Al ser nuestra excepción "checked" (Exception), sin
+    // esto NO se revertiría. Con esto, la empresa SÍ hace rollback.
+    @Transactional(rollbackFor = Exception.class)
     public void save(EmpresaRequestDto empresa) throws Exception {
         String usuario = getUsuarioActual();
         // Log asíncrono: se dispara y el método sigue de inmediato (no impacta el tiempo).
@@ -46,6 +49,13 @@ public class EmpresaService {
         this.repository.save(empresa1);
 
         this.logService.infoTxAsync("Empresa guardada correctamente: " + empresa.getNombre(), usuario);
+
+        // EXPERIMENTO: forzamos un error DESPUÉS del save para provocar rollback.
+        // Resultado esperado:
+        //   - La empresa NO se inserta (rollback de la transacción padre).
+        //   - El log SÍ queda en la tabla logs (corre en otro hilo, con su propia
+        //     transacción REQUIRES_NEW, independiente del rollback del padre).
+        throw new Exception("Excepción de prueba para forzar rollback de la empresa");
     }
 
     /**
