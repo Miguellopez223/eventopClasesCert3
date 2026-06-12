@@ -68,6 +68,6 @@ public class InjectConfiguration {
     @Scheduled(cron = "0 */1 * * * *")
     public void listarEmpresas(){
         log.info("INFO: " + "Listando todos los empresas");
-        logService.deleteAll();
+        //logService.deleteAll();
     }
 }
