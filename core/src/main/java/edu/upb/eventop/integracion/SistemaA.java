@@ -2,15 +2,16 @@ package edu.upb.eventop.integracion;
 
 import edu.upb.eventop.service.exception.NotDataFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import tools.jackson.databind.util.JSONPObject;
 
 import java.time.Duration;
-
 
 
 @Slf4j
@@ -28,15 +29,20 @@ public class SistemaA {
     public Sistema1AuthResponse auth(Sistema1AuthRequest request) throws Exception {
         RestClient restClient = create();
 
-        ResponseEntity<Sistema1AuthResponse> response;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("username", request.getUsername());
+        jsonObject.put("password", request.getPassword());
+
+        ResponseEntity<String> response;
         try {
             response = restClient.post()
                     .uri(urlBase + "/api/v1/auth")
                     .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                     .header("Accept", MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
+                    .body(jsonObject.toString())
                     .retrieve()
-                    .toEntity(Sistema1AuthResponse.class);
+            //.body(new ParameterizedTypeReference<List<Sistema1AuthResponse>>() {});
+                    .toEntity(String.class);
         } catch (NotDataFoundException e) {
             log.error("NotDataFoundException. {}", e.getMessage());
             throw e;
@@ -50,7 +56,12 @@ public class SistemaA {
             throw new Exception("Se genero error");
         }
 
-        return response.getBody();
+        JSONObject jsonResponse = new JSONObject(response.getBody());
+        String token = jsonResponse.getString("access_token");
+
+        Sistema1AuthResponse newResponse = new Sistema1AuthResponse();
+        newResponse.setAccessToken(token);
+        return newResponse;
     }
 
 

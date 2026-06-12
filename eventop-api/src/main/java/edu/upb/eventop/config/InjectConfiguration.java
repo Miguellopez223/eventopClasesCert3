@@ -1,6 +1,7 @@
 package edu.upb.eventop.config;
 
 import edu.upb.eventop.repository.entity.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,19 +18,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Slf4j
 @Configuration
 public class InjectConfiguration {
 
     // Leemos los parametros del pool desde application.properties y los
     // guardamos en variables de esta clase para usarlos al construir el pool.
-    @Value("${async.core-pool-size}")
+    @Value("${async.core-pool-size:5}")
     private int corePoolSize;
-
-    @Value("${async.max-pool-size}")
+    @Value("${async.max-pool-size:5}")
     private int maxPoolSize;
-
-    @Value("${async.queue-capacity}")
+    @Value("${async.queue-capacity:10}")
     private int queueCapacity;
 
     @Bean
@@ -57,6 +57,7 @@ public class InjectConfiguration {
         };
     }
 
+    // Pool de hilos para el logging asincrono (@Async("taskLog")).
     @Bean(name = "taskLog")
     public ThreadPoolTaskExecutor myTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -84,5 +85,4 @@ public class InjectConfiguration {
     public void listarEmpresas(){
         log.info("INFO: " + "Listando Empresas");
     }
-
 }

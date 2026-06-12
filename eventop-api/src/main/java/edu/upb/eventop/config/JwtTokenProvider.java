@@ -26,8 +26,6 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class JwtTokenProvider implements Serializable {
-    private static final String USER_ID_CLAIM = "user_id";
-
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     private byte[] secretKeyByte;

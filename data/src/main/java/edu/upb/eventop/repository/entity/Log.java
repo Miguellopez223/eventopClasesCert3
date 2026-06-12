@@ -1,44 +1,27 @@
 package edu.upb.eventop.repository.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import edu.upb.eventop.repository.enums.LogLevel;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "logs")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class Log {
+@Entity
+@Table(name = "log")
+public class Log extends AuditableEntity {
 
     @Id
     @UuidGenerator
     private String id;
 
-    @Column(name = "nivel", length = 10,
-            comment = "Nivel del log: INFO, ERROR, etc.")
-    private String nivel;
+    @Column(name = "_level", length = 10)
+    @Enumerated(EnumType.STRING)
+    private LogLevel level;
 
-    @Column(name = "mensaje", length = 1000,
-            comment = "Mensaje del log")
-    private String mensaje;
-
-    @Column(name = "usuario", length = 100,
-            comment = "Usuario que originó la operación")
-    private String usuario;
-
-    @Column(name = "fecha", nullable = false,
-            comment = "Fecha y hora de registro del log")
-    private LocalDateTime fecha;
+    @Column(name = "_message", length = 4000, comment = "Esta columna almacena el log")
+    private String message;
 }

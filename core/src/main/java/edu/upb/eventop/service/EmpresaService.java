@@ -5,10 +5,9 @@ import edu.upb.eventop.repository.EmpresaRepository;
 import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
+import edu.upb.eventop.service.exception.NotDataFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,53 +21,28 @@ public class EmpresaService {
     private final EmpresaRepository repository;
     private final LogService logService;
 
-    // rollbackFor = Exception.class -> por defecto Spring sólo hace rollback ante
-    // RuntimeException/Error. Al ser nuestra excepción "checked" (Exception), sin
-    // esto NO se revertiría. Con esto, la empresa SÍ hace rollback.
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(noRollbackFor = NotDataFoundException.class)
     public void save(EmpresaRequestDto empresa) throws Exception {
-        String usuario = getUsuarioActual();
-        // Log asíncrono: se dispara y el método sigue de inmediato (no impacta el tiempo).
-        this.logService.infoTxAsync("Inicio guardado de empresa: " + empresa.getNombre(), usuario);
+        logService.infoTx("Iniciando el registro de la empresa: " + empresa.getNombre());
 
         if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
             log.error("Error al guardar empresa. El campo nombre null");
-            this.logService.errorTxAsync("Error al guardar empresa. El campo nombre es null", usuario);
+            logService.errorTx("Error al guardar empresa. El campo nombre null");
             throw new Exception("El campo nombre es null");
         }
 
+        logService.infoTx("Validando empresa: " + empresa.getNombre());
         if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
             log.error("Error al guardar empresa. El campo Descripcion null");
-            this.logService.errorTxAsync("Error al guardar empresa. El campo Descripcion es null", usuario);
+            logService.errorTx("El campo Descripcion es null");
             throw new Exception("El campo Descripcion es null");
         }
 
+        logService.infoTx("Preparando para registrar:" + empresa.getNombre());
         Empresa empresa1 = new Empresa();
         empresa1.setNombre(empresa.getNombre());
         empresa1.setDescripcion(empresa.getDescripcion());
         this.repository.save(empresa1);
-
-        this.logService.infoTxAsync("Empresa guardada correctamente: " + empresa.getNombre(), usuario);
-
-        // EXPERIMENTO: forzamos un error DESPUÉS del save para provocar rollback.
-        // Resultado esperado:
-        //   - La empresa NO se inserta (rollback de la transacción padre).
-        //   - El log SÍ queda en la tabla logs (corre en otro hilo, con su propia
-        //     transacción REQUIRES_NEW, independiente del rollback del padre).
-        throw new Exception("Excepción de prueba para forzar rollback de la empresa");
-    }
-
-    /**
-     * Resuelve el usuario autenticado. El contexto de seguridad vive en el hilo
-     * actual y NO se propaga al hilo async, por eso lo capturamos aquí y lo
-     * pasamos como parámetro a LogService.
-     */
-    private String getUsuarioActual() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "ANONIMO";
-        }
-        return authentication.getName();
     }
 
 

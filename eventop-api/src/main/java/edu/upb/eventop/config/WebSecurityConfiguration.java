@@ -42,6 +42,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer, Serializable 
                                                 "/swagger-ui.html").permitAll()
 
                                         .requestMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
+                                        .requestMatchers(HttpMethod.POST, "/api/v1/stereum").permitAll()
 
                                         .requestMatchers("/error").anonymous() // <----- Fix
                                         .anyRequest().authenticated()
