@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Servicio de logging transaccional ASÍNCRONO.
@@ -77,8 +79,25 @@ public class LogService {
         repository.deleteAll();
     }
 
+    @Async
+    @Transactional
+    public Future<String> delete(String id) {
+        repository.deleteById(id);
+        try {
+            Thread.sleep(5000);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        return CompletableFuture.completedFuture(id);
+    }
+
     @Transactional(readOnly = true)
     public Page<Log> findAllByOrderByDateDesc(LocalDateTime pInit, LocalDateTime pEnd, Pageable pageable) {
         return repository.findAllByOrderByDateDesc(pInit, pEnd, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Log> findAllByOrderByDateDesc(Pageable pageable) {
+        return repository.findAllByOrderByDateDesc(pageable);
     }
 }

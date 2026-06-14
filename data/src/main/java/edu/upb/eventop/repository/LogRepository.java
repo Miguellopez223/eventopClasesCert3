@@ -19,4 +19,7 @@ public interface LogRepository extends JpaRepository<Log, String> {
             @Param("pEnd") LocalDateTime pEnd,
             Pageable pageable);
 
+    @Query("SELECT l FROM Log l")
+    Page<Log> findAllByOrderByDateDesc(Pageable pageable);
+
 }

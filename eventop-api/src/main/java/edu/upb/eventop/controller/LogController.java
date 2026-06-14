@@ -34,8 +34,9 @@ public class LogController {
                                           @RequestParam("to") @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
 
         try {
-            return ResponseEntity.ok(logService.findAllByOrderByDateDesc(from.toInstant()
-                            .atZone(ZoneId.systemDefault()).toLocalDateTime(),
+            return ResponseEntity.ok(logService.findAllByOrderByDateDesc(
+                    from.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+
                     to.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
 
                     PageRequest.of(page, size, Sort.by(sortDir, sortBy)))
