@@ -4,13 +4,16 @@ import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.User;
 import edu.upb.eventop.service.EmpresaService;
+import edu.upb.eventop.service.exception.OperationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class EmpresaController {
 
         try {
             return ResponseEntity.ok(empresaService.listar());
-        }catch (Exception e) {
+        } catch(Exception e) {
             log.error("Error al listar empresas", e);
             return ResponseEntity.internalServerError().build();
         }
@@ -40,9 +43,12 @@ public class EmpresaController {
         try {
             this.empresaService.save(empresa);
             return ResponseEntity.ok().build();
+        }catch (OperationException e){
+            log.error("Error al guardar empresa. Message: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }catch (Exception e) {
             log.error("Error al guardar empresa", e);
-            return ResponseEntity.internalServerError().build();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Se generó un error genérico al guardar empresa");
         }
     }
 
