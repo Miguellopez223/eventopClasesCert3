@@ -6,6 +6,7 @@ import edu.upb.eventop.repository.dto.request.EmpresaRequestDto;
 import edu.upb.eventop.repository.dto.response.EmpresaDto;
 import edu.upb.eventop.repository.entity.Empresa;
 import edu.upb.eventop.service.exception.NotDataFoundException;
+import edu.upb.eventop.service.exception.OperationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,14 +28,14 @@ public class EmpresaService {
         if (StringUtil.isNullOrEmpty(empresa.getNombre())) {
             log.error("Error al guardar empresa. El campo nombre null");
             logService.errorTx("Error al guardar empresa. El campo nombre null");
-            throw new Exception("El campo nombre es null");
+            throw new OperationException("El campo nombre es null");
         }
 
         logService.infoTx("Validando empresa: "+empresa.getNombre());
         if (StringUtil.isNullOrEmpty(empresa.getDescripcion())) {
             log.error("Error al guardar empresa. El campo Descripcion null");
             logService.errorTx("El campo Descripcion es null");
-            throw new Exception("El campo Descripcion es null");
+            throw new OperationException("El campo Descripcion es null");
         }
 
         logService.infoTx("Preparando para registrar:"+ empresa.getNombre());

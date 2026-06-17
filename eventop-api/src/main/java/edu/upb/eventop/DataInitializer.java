@@ -4,6 +4,7 @@ import edu.upb.eventop.repository.UserRepository;
 import edu.upb.eventop.repository.entity.User;
 import edu.upb.eventop.repository.enums.RoleType;
 import edu.upb.eventop.repository.enums.UserStatus;
+import edu.upb.eventop.service.EmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public void run(String... args) throws Exception {
         init();
+        emailService.sendPassword("rllayus@gmail.com", "123456");
     }
 
     private void init() {
