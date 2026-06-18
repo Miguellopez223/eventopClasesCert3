@@ -1,5 +1,10 @@
 package edu.upb.eventop;
 
+import edu.upb.eventop.job.EmailSenderJob;
+import edu.upb.eventop.quartz.CronExpressionConstant;
+import edu.upb.eventop.quartz.service.JobDto;
+import edu.upb.eventop.quartz.service.JobService;
+import edu.upb.eventop.quartz.service.JobUtil;
 import edu.upb.eventop.repository.UserRepository;
 import edu.upb.eventop.repository.entity.User;
 import edu.upb.eventop.repository.enums.RoleType;
@@ -11,18 +16,25 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Slf4j
 @Component
 @AllArgsConstructor
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
     private final EmailService emailService;
+    private final JobService jobService;
 
     @Override
     public void run(String... args) throws Exception {
         init();
-        emailService.sendPassword("rllayus@gmail.com", "123456");
+        JobDto jobDto = EmailSenderJob.getJobDto(JobUtil.GROUP_NAME);
+        if (!jobService.existJobName(jobDto.getGroupName(), jobDto.getJobName())) {
+            jobService.scheduleCronJob(jobDto, new Date(), CronExpressionConstant.CRON_X_3_SEG, null, "Este Job envia correos");
+        }
     }
 
     private void init() {

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,26 +28,31 @@ public class EmailService {
     @Value("${mail.smtp.mail-noreply}")
     private String mailNoreply;
     private final MailContentBuilder mailContentBuilder;
+
+    @Lazy
     @Autowired
     @Qualifier("javaMailSender")
     private JavaMailSender javaMailSender;
 
     @Async("taskLog")
     public void sendPassword(String to, String password) {
+        log.info("Sending email to {} with password {}", to, password);
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             messageHelper.setTo(to);
             messageHelper.setFrom(new InternetAddress(mailFrom));
             messageHelper.setReplyTo(new InternetAddress(mailNoreply, mailNoreply));
             messageHelper.setSubject("Password reset");
-            String message = mailContentBuilder.sendPassword(password);
 
+            String message = mailContentBuilder.sendPassword(password);
             messageHelper.setText(message, true);
+
             messageHelper.addInline("banner", new ClassPathResource(BANNER_PNG));
             messageHelper.addInline("imageLinkedin", new ClassPathResource(LINKEDIN_PNG));
             messageHelper.addInline("imageX", new ClassPathResource(X_PNG));
         };
         javaMailSender.send(messagePreparator);
-
+        log.info("Email sent");
     }
+
 }

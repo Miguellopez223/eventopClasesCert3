@@ -20,9 +20,9 @@ public class MailContentBuilder {
         return templateEngine.process("mailTemplate", context);
     }
 
-
     public String sendPassword(String password) {
         final Context ctx = new Context();
+
         ctx.setVariable("password", password);
         ctx.setVariable("imageResourceName", "banner");
         ctx.setVariable("imageX", "imageX");

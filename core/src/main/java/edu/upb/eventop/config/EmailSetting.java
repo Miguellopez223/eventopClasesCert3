@@ -14,26 +14,18 @@ import java.util.Properties;
 public class EmailSetting {
     @Value("${mail.host}")
     private String host;
-
     @Value("${mail.smtp.port}")
     private int port;
-
     @Value("${mail.smtp.auth}")
     private boolean auth;
-
     @Value("${mail.smtp.starttls.enable}")
     private boolean starttlsEnable;
-
     @Value("${mail.smtp.protocol}")
     private String protocol;
-
     @Value("${mail.smtp.username}")
     private String username;
-
     @Value("${mail.smtp.password}")
     private String password;
-
-
 
     @Bean
     @Lazy

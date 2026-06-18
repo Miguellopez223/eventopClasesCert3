@@ -8,7 +8,10 @@ import edu.upb.eventop.repository.entity.Empresa;
 import edu.upb.eventop.service.exception.NotDataFoundException;
 import edu.upb.eventop.service.exception.OperationException;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +19,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class EmpresaService {
     private final EmpresaRepository repository;
     private final LogService logService;
+
+    @Autowired
+    @Qualifier("ganaderMetodoPago")
+    private MetodoPagoService ganaderMetodoPago;
+
+    @Autowired
+    @Qualifier("stereumMetodoPago")
+    private MetodoPagoService stereumMetodoPago;
 
     @Transactional(noRollbackFor = NotDataFoundException.class)
     public void save(EmpresaRequestDto empresa) throws Exception {
