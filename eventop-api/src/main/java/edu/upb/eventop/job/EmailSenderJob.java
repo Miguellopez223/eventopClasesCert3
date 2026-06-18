@@ -1,0 +1,47 @@
+package edu.upb.eventop.job;
+
+import edu.upb.eventop.quartz.service.JobDto;
+import edu.upb.eventop.quartz.service.JobService;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+
+
+@Slf4j
+@PersistJobDataAfterExecution
+@DisallowConcurrentExecution
+public class EmailSenderJob extends QuartzJobBean implements InterruptableJob {
+    public static final String NAME_JOB = "EmailSenderJob";
+    private static final String NAME_TRIGGER = "EmailSenderJob-trigger";
+
+    @Autowired
+    private JobService jobService;
+
+
+
+    @SneakyThrows
+    @Override
+    protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        JobKey key = jobExecutionContext.getJobDetail().getKey();
+        JobDataMap dataMap = jobExecutionContext.getJobDetail().getJobDataMap();
+        log.info("Ejecutando!!!!");
+    }
+
+
+    public static JobDto getJobDto(String groupName) {
+        JobDto jobDto = new JobDto();
+        jobDto.setGroupName(groupName);
+        jobDto.setJobName(NAME_JOB);
+        jobDto.setTriggerKey(NAME_TRIGGER);
+        jobDto.setJobClass(EmailSenderJob.class);
+        return jobDto;
+    }
+
+    @Override
+    public void interrupt() throws UnableToInterruptJobException {
+        log.info("Deteniendo el hilo ");
+    }
+
+}
