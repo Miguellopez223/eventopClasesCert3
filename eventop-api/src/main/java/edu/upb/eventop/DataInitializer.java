@@ -31,10 +31,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         init();
+
         JobDto jobDto = EmailSenderJob.getJobDto(JobUtil.GROUP_NAME);
         if (!jobService.existJobName(jobDto.getGroupName(), jobDto.getJobName())) {
             jobService.scheduleCronJob(jobDto, new Date(), CronExpressionConstant.CRON_X_3_SEG, null, "Este Job envia correos");
         }
+
     }
 
     private void init() {
