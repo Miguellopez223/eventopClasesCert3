@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 public class JobUtil {
-    public static final String GROUP_NAME = "Stereum";
+    public static final String GROUP_NAME = "Eventop";
     public static final String KEY_ATTEMPT = "ATTEMPT";
     public static final String KEY_ATTEMPT_ERROR = "ATTEMPT_ERROR";
     public static final String KEY_MAX_ATTEMPT = "MAX_ATTEMPT";
